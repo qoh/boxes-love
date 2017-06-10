@@ -1,7 +1,12 @@
 local M = {}
 
-local field_width = 400
-local field_height = 400
+-- Collision detection function.
+-- Checks if a and b overlap.
+-- w and h mean width and height.
+function checkcollision(ax1,ay1,aw,ah, bx1,by1,bw,bh)
+  local ax2,ay2,bx2,by2 = ax1 + aw, ay1 + ah, bx1 + bw, by1 + bh
+  return ax1 < bx2 and ax2 > bx1 and ay1 < by2 and ay2 > by1
+end
 
 function M:tick(dt, state, input, replay)
 	self.vx = 500 * input.x -- left/right
@@ -21,8 +26,45 @@ function M:tick(dt, state, input, replay)
 		end
 	end
 
-	self.px = self.px + dt * self.vx
-	self.py = self.py + dt * self.vy
+	local mx = self.px + dt * self.vx
+	local my = self.py + dt * self.vy
+
+	local function checkvert(v)
+		if checkcollision(self.px, my, 50, 50, v.px, v.py, 50, 50) then
+			if my > self.py then
+				self.vy = 0
+				self.jumps = 3
+				-- surfing
+			end
+			if my > v.py then
+				my = v.py + 50
+				self.vy = 0
+			elseif my ~= v.py then
+				my = v.py - 50
+				self.vy = 0
+			end
+		end
+	end
+
+	local function checkhor(v)
+		if checkcollision(mx, self.py, 50, 50, v.px, v.py, 50, 50) then
+			if mx > v.px then
+				mx = v.px + 50
+			else
+				mx = v.px - 50
+			end
+		end
+	end
+
+	for id, entity in pairs(state.entities) do
+		if entity ~= self then
+			checkhor(entity)
+			checkvert(entity)
+		end
+	end
+
+	self.px = mx
+	self.py = my
 
 	if self.px < 0 then
 		self.px = 0

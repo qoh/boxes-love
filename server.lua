@@ -59,13 +59,18 @@ function M.start()
 	clients = {}
 	last_entity_id = 0
 	entities = {}
+	state.entities = entities
 
-	add_entity(setmetatable({
-		px = 0,
-		py = 0,
-		vx = 0,
-		vy = 0,
-	}, require('ents.server_block')))
+	for i = 1, 40 do
+		if math.random() < 0.2 then
+			add_entity(setmetatable({
+				px = i * 50 - 50,
+				py = 0,
+				vx = 0,
+				vy = 0,
+			}, require('ents.server_block')))
+		end
+	end
 end
 
 function M.stop()

@@ -141,6 +141,7 @@ return function(address)
 	instance.control_id = 0
 	instance.was_jumping = true
 	instance.entities = {}
+	state.entities = instance.entities
 	instance.camera = camera(0, 0)
 	instance.camera.smoother = camera.smooth.damped(5)
 	return instance
