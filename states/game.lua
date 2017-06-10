@@ -119,8 +119,8 @@ function mt.__index:draw()
 	love.graphics.rectangle('fill', 0, state.field_height, state.field_width, 100)
 	love.graphics.setColor(255, 255, 255)
 
-	for i = 1, #self.entities do
-		self.entities[i]:draw()
+	for id, entity in pairs(self.entities) do
+		entity:draw()
 	end
 
 	self.camera:detach()
