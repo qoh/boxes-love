@@ -13,7 +13,7 @@ function menu:keypressed(key)
 	elseif key == 'w' then
 		server.start()
 	elseif key == 'e' then
-		gamestate.switch(gamefactory('localhost:8450'))
+		gamestate.switch(gamefactory('nssm.me:8450'))
 	end
 end
 

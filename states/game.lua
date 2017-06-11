@@ -130,6 +130,8 @@ function mt.__index:draw()
 	if peer_state ~= 'connected' then
 		love.graphics.print(peer_state, 5, 5)
 	end
+
+	love.graphics.print(string.format('%d/%d max predicted moves', #self.predicted_moves, 50), 5, 25)
 end
 
 return function(address)
