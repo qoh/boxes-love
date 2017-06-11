@@ -1,3 +1,6 @@
+local util = require 'lib.util'
+local checkcollision = util.checkcollision
+
 local mt = {__index = {}}
 
 function mt.__index:pack()
@@ -12,6 +15,23 @@ function mt.__index:server_tick(dt, state)
 
 	self.px = self.px + dt * self.vx
 	self.py = self.py + dt * self.vy
+
+	for id, entity in pairs(state.entities) do
+		if self ~= entity and entity.type_def == self.type_def then
+			if checkcollision(self.px, self.py, 50, 50, entity.px, entity.py, 50, 50) then -- and not a bullet
+				if self.py > entity.py then
+					self.py = entity.py + 50
+				else
+					self.py = entity.py - 50
+				end
+				self.vy = 0
+				if false then -- falling
+					-- set to static
+					-- fireShake
+				end
+			end
+		end
+	end
 
 	if self.px < 0 then
 		self.px = 0

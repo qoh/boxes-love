@@ -61,11 +61,12 @@ function M.start()
 	entities = {}
 	state.entities = entities
 
-	for i = 1, 40 do
-		if math.random() < 0.2 then
+	for i = 1, 64 do
+		local n = love.math.random(-1, 5)
+		for j = 1, n do
 			add_entity(setmetatable({
 				px = i * 50 - 50,
-				py = 0,
+				py = j * 150,
 				vx = 0,
 				vy = 0,
 			}, require('ents.server_block')))

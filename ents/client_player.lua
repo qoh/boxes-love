@@ -40,9 +40,12 @@ function mt.__index:draw()
 	local value = 100
 	local glow = math.max((math.sin(self.glow) + 0.5) * 20, 0)
 
+	local px = self.px - 10
+	local py = self.py - 10
+
 	love.graphics.setColor(util.hsl(hue, sat, math.min(value + glow, 255)))
-	love.graphics.draw(image_player, self.px, self.py, 0, 2)
-	love.graphics.circle('fill', self.px + 25 + 35 * self.dir, self.py + 25, 2)
+	love.graphics.draw(image_player, px, py, 0, 2)
+	love.graphics.circle('fill', px + 25 + 35 * self.dir, py + 25, 2)
 	love.graphics.setColor(255, 255, 255)
 end
 

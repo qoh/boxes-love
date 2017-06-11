@@ -1,12 +1,10 @@
+local util = require 'lib.util'
+local checkcollision = util.checkcollision
+
 local M = {}
 
--- Collision detection function.
--- Checks if a and b overlap.
--- w and h mean width and height.
-function checkcollision(ax1,ay1,aw,ah, bx1,by1,bw,bh)
-  local ax2,ay2,bx2,by2 = ax1 + aw, ay1 + ah, bx1 + bw, by1 + bh
-  return ax1 < bx2 and ax2 > bx1 and ay1 < by2 and ay2 > by1
-end
+local PL_WIDTH = 30
+local PL_HEIGHT = 30
 
 function M:tick(dt, state, input, replay)
 	self.vx = 500 * input.x -- left/right
@@ -30,28 +28,55 @@ function M:tick(dt, state, input, replay)
 	local my = self.py + dt * self.vy
 
 	local function checkvert(v)
-		if checkcollision(self.px, my, 50, 50, v.px, v.py, 50, 50) then
+		if checkcollision(self.px, my, PL_WIDTH, PL_HEIGHT, v.px, v.py, 50, 50) then
+			self.vy = 0
 			if my > self.py then
-				self.vy = 0
 				self.jumps = 3
 				-- surfing
 			end
 			if my > v.py then
 				my = v.py + 50
-				self.vy = 0
-			elseif my ~= v.py then
-				my = v.py - 50
-				self.vy = 0
+			elseif my < v.py then
+				my = v.py - PL_HEIGHT
 			end
 		end
 	end
 
 	local function checkhor(v)
-		if checkcollision(mx, self.py, 50, 50, v.px, v.py, 50, 50) then
+		if checkcollision(mx, self.py, PL_WIDTH, PL_HEIGHT, v.px, v.py, 50, 50) then
+			self.vx = 0
 			if mx > v.px then
 				mx = v.px + 50
 			else
+				mx = v.px - PL_WIDTH
+			end
+		end
+	end
+
+	local function checknew(v)
+		local acx = mx + 25
+		local acy = my + 25
+		local bcx = v.px + 25
+		local bcy = v.py + 25
+		local dx = bcx - acx
+		local dy = bcy - acy
+		if math.abs(dx) >= 50 or math.abs(dy) >= 50 then
+			return
+		end
+		if math.abs(dx) > math.abs(dy) then
+			self.vx = 0
+			if dx > 0 then
 				mx = v.px - 50
+			else
+				mx = v.px + 50
+			end
+		else
+			self.vy = 0
+			if dy > 0 then
+				my = v.py - 50
+				self.jumps = 3
+			else
+				my = v.py + 50
 			end
 		end
 	end
@@ -60,6 +85,7 @@ function M:tick(dt, state, input, replay)
 		if entity ~= self then
 			checkhor(entity)
 			checkvert(entity)
+			--checknew(entity)
 		end
 	end
 
@@ -69,13 +95,13 @@ function M:tick(dt, state, input, replay)
 	if self.px < 0 then
 		self.px = 0
 		self.vx = 0
-	elseif self.px >= state.field_width - 50 then
-		self.px = state.field_width - 50
+	elseif self.px >= state.field_width - PL_WIDTH then
+		self.px = state.field_width - PL_WIDTH
 		self.vx = 0
 	end
 
-	if self.py > state.field_height - 50 then
-		self.py = state.field_height - 50
+	if self.py > state.field_height - PL_HEIGHT then
+		self.py = state.field_height -PL_HEIGHT
 		self.vy = 0
 		self.jumps = 3
 	end
