@@ -2,8 +2,10 @@ local menu = {}
 local server = require 'server'
 local gamestate = require 'lib.hump.gamestate'
 local gamefactory = require 'states.game'
+local enteraddress = require 'states.enteraddress' (menu)
 
 local text = [[Press Q to quit
+
 Press W to host a game
 Press E to join a game]]
 
@@ -14,7 +16,7 @@ function menu:keypressed(key)
 		server.start()
 		gamestate.switch(gamefactory('localhost:8450'))
 	elseif key == 'e' then
-		gamestate.switch(gamefactory('nssm.me:8450'))
+		gamestate.switch(enteraddress)
 	end
 end
 
