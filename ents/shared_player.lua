@@ -24,6 +24,63 @@ local function grab(self, state)
 	end
 end
 
+local function checkvert(self, mx, my, v)
+	if checkcollision(self.px, my, PL_WIDTH, PL_HEIGHT, v.px, v.py, 50, 50) then
+		self.vy = 0
+		if my > self.py then
+			self.jumps = 3
+			-- surfing
+		end
+		if my > v.py then
+			my = v.py + 50
+		elseif my < v.py then
+			my = v.py - PL_HEIGHT
+		end
+	end
+	return mx, my
+end
+
+local function checkhor(self, mx, my, v)
+	if checkcollision(mx, self.py, PL_WIDTH, PL_HEIGHT, v.px, v.py, 50, 50) then
+		self.vx = 0
+		if mx > v.px then
+			mx = v.px + 50
+		else
+			mx = v.px - PL_WIDTH
+		end
+	end
+	return mx, my
+end
+
+local function checknew(self, mx, my, v)
+	local acx = mx + 25
+	local acy = my + 25
+	local bcx = v.px + 25
+	local bcy = v.py + 25
+	local dx = bcx - acx
+	local dy = bcy - acy
+	if math.abs(dx) >= 50 or math.abs(dy) >= 50 then
+		return mx, my
+	end
+	if math.abs(dx) > math.abs(dy) then
+		self.vx = 0
+		if dx > 0 then
+			mx = v.px - 50
+		else
+			mx = v.px + 50
+		end
+	else
+		self.vy = 0
+		if dy > 0 then
+			my = v.py - 50
+			self.jumps = 3
+		else
+			my = v.py + 50
+		end
+	end
+	return mx, my
+end
+
 function M:tick(dt, state, input, replay)
 	self.vx = 500 * input.x -- left/right
 	self.vy = self.vy + dt * 3000 -- gravity
@@ -45,64 +102,10 @@ function M:tick(dt, state, input, replay)
 	local mx = self.px + dt * self.vx
 	local my = self.py + dt * self.vy
 
-	local function checkvert(v)
-		if checkcollision(self.px, my, PL_WIDTH, PL_HEIGHT, v.px, v.py, 50, 50) then
-			self.vy = 0
-			if my > self.py then
-				self.jumps = 3
-				-- surfing
-			end
-			if my > v.py then
-				my = v.py + 50
-			elseif my < v.py then
-				my = v.py - PL_HEIGHT
-			end
-		end
-	end
-
-	local function checkhor(v)
-		if checkcollision(mx, self.py, PL_WIDTH, PL_HEIGHT, v.px, v.py, 50, 50) then
-			self.vx = 0
-			if mx > v.px then
-				mx = v.px + 50
-			else
-				mx = v.px - PL_WIDTH
-			end
-		end
-	end
-
-	local function checknew(v)
-		local acx = mx + 25
-		local acy = my + 25
-		local bcx = v.px + 25
-		local bcy = v.py + 25
-		local dx = bcx - acx
-		local dy = bcy - acy
-		if math.abs(dx) >= 50 or math.abs(dy) >= 50 then
-			return
-		end
-		if math.abs(dx) > math.abs(dy) then
-			self.vx = 0
-			if dx > 0 then
-				mx = v.px - 50
-			else
-				mx = v.px + 50
-			end
-		else
-			self.vy = 0
-			if dy > 0 then
-				my = v.py - 50
-				self.jumps = 3
-			else
-				my = v.py + 50
-			end
-		end
-	end
-
 	for id, entity in pairs(state.entities) do
 		if entity ~= self then
-			checkhor(entity)
-			checkvert(entity)
+			mx, my = checkhor(self, mx, my, entity)
+			mx, my = checkvert(self, mx, my, entity)
 			--checknew(entity)
 		end
 	end
