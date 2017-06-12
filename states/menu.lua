@@ -12,6 +12,7 @@ function menu:keypressed(key)
 		love.event.quit()
 	elseif key == 'w' then
 		server.start()
+		gamestate.switch(gamefactory('localhost:8450'))
 	elseif key == 'e' then
 		gamestate.switch(gamefactory('nssm.me:8450'))
 	end
