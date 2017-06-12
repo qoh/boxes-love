@@ -69,6 +69,8 @@ function M.start()
 				py = j * 150,
 				vx = 0,
 				vy = 0,
+				state = 'falling',
+				life = 20,
 			}, require('ents.server_block')))
 		end
 	end
