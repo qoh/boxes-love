@@ -20,12 +20,22 @@ function mt.__index:collect_input()
 	--self.was_jumping = jump_current
 	local jump = self.jump
 	self.jump = false
-	return {x = x, jump = jump}
+	local grab_now = self.grab_now
+	self.grab_now = false
+	return {
+		x = x,
+		jump = jump,
+		grab = love.keyboard.isDown('lshift', 'rshift'),
+		grab_now = grab_now,
+	}
 end
 
 function mt.__index:keypressed(key)
 	if key == 'up' or key == 'space' or key == 'w' then
 		self.jump = true
+	end
+	if key == 'lshift' or key == 'rshift' then
+		self.grab_now = true
 	end
 end
 

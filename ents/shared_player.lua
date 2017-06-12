@@ -3,8 +3,26 @@ local checkcollision = util.checkcollision
 
 local M = {}
 
-local PL_WIDTH = 30
-local PL_HEIGHT = 30
+local PL_WIDTH = 50 -- 30
+local PL_HEIGHT = 50 -- 30
+
+local function grab(self, state)
+	if self.holding or self.dead then
+		return
+	end
+
+	for id, entity in pairs(state.entities) do
+		local dx = (entity.px - (self.px + 50 * self.dir)) * self.dir
+		local dy = math.abs(entity.py - self.py)
+
+		if dx >= 0 and dx < 50 and dy < 25 then
+			if entity.state ~= 'bullet' then
+				self.holding = true
+				self:on_grab(entity)
+			end
+		end
+	end
+end
 
 function M:tick(dt, state, input, replay)
 	self.vx = 500 * input.x -- left/right
@@ -104,6 +122,15 @@ function M:tick(dt, state, input, replay)
 		self.py = state.field_height -PL_HEIGHT
 		self.vy = 0
 		self.jumps = 3
+	end
+
+	if input.grab and input.grab_now then
+		grab(self, state)
+	end
+
+	if self.holding and not input.grab then
+		self.holding = false
+		-- fire block
 	end
 end
 

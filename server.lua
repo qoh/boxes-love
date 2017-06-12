@@ -123,6 +123,9 @@ function M.update(dt)
 				vy = 0,
 				dir = 1,
 				jumps = 0,
+				hue = love.math.random(360),
+				sat = love.math.random(150, 250),
+				val = love.math.random(75, 125),
 			}, player_server)
 			add_entity(entity)
 			clients[index] = {

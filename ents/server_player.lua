@@ -1,13 +1,20 @@
 local player_shared = require 'ents.shared_player'
 local mt = {__index = {}}
 
-function mt.__index:pack()
-	return { -- everything that should be network synced
+function mt.__index:pack(first)
+	local data = { -- everything that should be network synced
 		self.px, self.py,
 		self.vx, self.vy,
 		self.dir,
 		self.jumps,
+		self.holding,
 	}
+	if first then
+		data.hue = self.hue
+		data.sat = self.sat
+		data.val = self.val
+	end
+	return data
 end
 
 function mt.__index:tick(dt, state, input)
@@ -16,6 +23,10 @@ function mt.__index:tick(dt, state, input)
 end
 
 function mt.__index:on_jump()
+end
+
+function mt.__index:on_grab(entity)
+	-- remove entity
 end
 
 return mt
